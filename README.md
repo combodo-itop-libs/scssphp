@@ -1,6 +1,6 @@
 ----
 # WARNING
-This branch is NOT meant to be merged into master. Files have been put through a compatibility script so the lib can be used on a webserver with iTop lowest prerequisites (PHP 5.3).
+This branch is NOT meant to be merged into master. Files have been put through a compatibility script (based on the excellent php-parser https://github.com/nikic/PHP-Parser by Nikita Popov) so the lib can be used on a webserver with iTop lowest prerequisites (PHP 5.3).
 
 Main changes are:
 * Array convertion from short syntax to long syntax.
