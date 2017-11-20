@@ -8,12 +8,10 @@
  *
  * @link http://leafo.github.io/scssphp
  */
-
 namespace Leafo\ScssPhp\Formatter;
 
 use Leafo\ScssPhp\Formatter;
 use Leafo\ScssPhp\Formatter\OutputBlock;
-
 /**
  * Crunched formatter
  *
@@ -35,25 +33,20 @@ class Crunched extends Formatter
         $this->assignSeparator = ':';
         $this->keepSemicolons = false;
     }
-
     /**
      * {@inheritdoc}
      */
     public function blockLines(OutputBlock $block)
     {
         $inner = $this->indentStr();
-
         $glue = $this->break . $inner;
-
         foreach ($block->lines as $index => $line) {
             if (substr($line, 0, 2) === '/*') {
                 unset($block->lines[$index]);
             }
         }
-
         echo $inner . implode($glue, $block->lines);
-
-        if (! empty($block->children)) {
+        if (!empty($block->children)) {
             echo $this->break;
         }
     }

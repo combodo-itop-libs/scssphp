@@ -8,11 +8,9 @@
  *
  * @link http://leafo.github.io/scssphp
  */
-
 namespace Leafo\ScssPhp;
 
 use Leafo\ScssPhp\Base\Range;
-
 /**
  * Utilties
  *
@@ -36,20 +34,16 @@ class Util
     public static function checkRange($name, Range $range, $value, $unit = '')
     {
         $val = $value[1];
-        $grace = new Range(-0.00001, 0.00001);
-
+        $grace = new Range(-1.0E-5, 1.0E-5);
         if ($range->includes($val)) {
             return $val;
         }
-
         if ($grace->includes($val - $range->first)) {
             return $range->first;
         }
-
         if ($grace->includes($val - $range->last)) {
             return $range->last;
         }
-
-        throw new \Exception("$name {$val} must be between {$range->first} and {$range->last}$unit");
+        throw new \Exception("{$name} {$val} must be between {$range->first} and {$range->last}{$unit}");
     }
 }

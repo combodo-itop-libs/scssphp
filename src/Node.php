@@ -8,7 +8,6 @@
  *
  * @link http://leafo.github.io/scssphp
  */
-
 namespace Leafo\ScssPhp;
 
 /**
@@ -22,17 +21,14 @@ abstract class Node
      * @var string
      */
     public $type;
-
     /**
      * @var integer
      */
     public $sourceIndex;
-
     /**
      * @var integer
      */
     public $sourceLine;
-
     /**
      * @var integer
      */

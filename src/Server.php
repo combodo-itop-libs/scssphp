@@ -8,13 +8,11 @@
  *
  * @link http://leafo.github.io/scssphp
  */
-
 namespace Leafo\ScssPhp;
 
 use Leafo\ScssPhp\Compiler;
 use Leafo\ScssPhp\Exception\ServerException;
 use Leafo\ScssPhp\Version;
-
 /**
  * Server
  *
@@ -26,22 +24,18 @@ class Server
      * @var boolean
      */
     private $showErrorsAsCSS;
-
     /**
      * @var string
      */
     private $dir;
-
     /**
      * @var string
      */
     private $cacheDir;
-
     /**
      * @var \Leafo\ScssPhp\Compiler
      */
     private $scss;
-
     /**
      * Join path components
      *
@@ -54,7 +48,6 @@ class Server
     {
         return rtrim($left, '/\\') . DIRECTORY_SEPARATOR . ltrim($right, '/\\');
     }
-
     /**
      * Get name of requested .scss file
      *
@@ -71,7 +64,6 @@ class Server
                 return substr($_SERVER['DOCUMENT_URI'], strlen($_SERVER['SCRIPT_NAME']));
         }
     }
-
     /**
      * Get path to requested .scss file
      *
@@ -79,20 +71,14 @@ class Server
      */
     protected function findInput()
     {
-        if (($input = $this->inputName())
-            && strpos($input, '..') === false
-            && substr($input, -5) === '.scss'
-        ) {
+        if (($input = $this->inputName()) && strpos($input, '..') === false && substr($input, -5) === '.scss') {
             $name = $this->join($this->dir, $input);
-
             if (is_file($name) && is_readable($name)) {
                 return $name;
             }
         }
-
         return false;
     }
-
     /**
      * Get path to cached .css file
      *
@@ -102,7 +88,6 @@ class Server
     {
         return $this->join($this->cacheDir, md5($fname) . '.css');
     }
-
     /**
      * Get path to meta data
      *
@@ -112,7 +97,6 @@ class Server
     {
         return $out . '.meta';
     }
-
     /**
      * Determine whether .scss file needs to be re-compiled.
      *
@@ -123,39 +107,28 @@ class Server
      */
     protected function needsCompile($out, &$etag)
     {
-        if (! is_file($out)) {
+        if (!is_file($out)) {
             return true;
         }
-
         $mtime = filemtime($out);
-
         $metadataName = $this->metadataName($out);
-
         if (is_readable($metadataName)) {
             $metadata = unserialize(file_get_contents($metadataName));
-
             foreach ($metadata['imports'] as $import => $originalMtime) {
                 $currentMtime = filemtime($import);
-
                 if ($currentMtime !== $originalMtime || $currentMtime > $mtime) {
                     return true;
                 }
             }
-
             $metaVars = crc32(serialize($this->scss->getVariables()));
-
             if ($metaVars !== $metadata['vars']) {
                 return true;
             }
-
             $etag = $metadata['etag'];
-
             return false;
         }
-
         return true;
     }
-
     /**
      * Get If-Modified-Since header from client request
      *
@@ -164,18 +137,14 @@ class Server
     protected function getIfModifiedSinceHeader()
     {
         $modifiedSince = null;
-
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
             $modifiedSince = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
-
             if (false !== ($semicolonPos = strpos($modifiedSince, ';'))) {
                 $modifiedSince = substr($modifiedSince, 0, $semicolonPos);
             }
         }
-
         return $modifiedSince;
     }
-
     /**
      * Get If-None-Match header from client request
      *
@@ -184,14 +153,11 @@ class Server
     protected function getIfNoneMatchHeader()
     {
         $noneMatch = null;
-
         if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
             $noneMatch = $_SERVER['HTTP_IF_NONE_MATCH'];
         }
-
         return $noneMatch;
     }
-
     /**
      * Compile .scss file
      *
@@ -202,28 +168,17 @@ class Server
      */
     protected function compile($in, $out)
     {
-        $start   = microtime(true);
-        $css     = $this->scss->compile(file_get_contents($in), $in);
-        $elapsed = round((microtime(true) - $start), 4);
-
-        $v    = Version::VERSION;
-        $t    = date('r');
-        $css  = "/* compiled by scssphp $v on $t (${elapsed}s) */\n\n" . $css;
+        $start = microtime(true);
+        $css = $this->scss->compile(file_get_contents($in), $in);
+        $elapsed = round(microtime(true) - $start, 4);
+        $v = Version::VERSION;
+        $t = date('r');
+        $css = "/* compiled by scssphp {$v} on {$t} ({$elapsed}s) */\n\n" . $css;
         $etag = md5($css);
-
         file_put_contents($out, $css);
-        file_put_contents(
-            $this->metadataName($out),
-            serialize([
-                'etag'    => $etag,
-                'imports' => $this->scss->getParsedFiles(),
-                'vars'    => crc32(serialize($this->scss->getVariables())),
-            ])
-        );
-
-        return [$css, $etag];
+        file_put_contents($this->metadataName($out), serialize(array('etag' => $etag, 'imports' => $this->scss->getParsedFiles(), 'vars' => crc32(serialize($this->scss->getVariables())))));
+        return array($css, $etag);
     }
-
     /**
      * Format error as a pseudo-element in CSS
      *
@@ -233,24 +188,12 @@ class Server
      */
     protected function createErrorCSS(\Exception $error)
     {
-        $message = str_replace(
-            ["'", "\n"],
-            ["\\'", "\\A"],
-            $error->getfile() . ":\n\n" . $error->getMessage()
-        );
+        $message = str_replace(array('\'', '
+'), array('\\\'', '\\A'), $error->getfile() . ':
 
-        return "body { display: none !important; }
-                html:after {
-                    background: white;
-                    color: black;
-                    content: '$message';
-                    display: block !important;
-                    font-family: mono;
-                    padding: 1em;
-                    white-space: pre;
-                }";
+' . $error->getMessage());
+        return "body { display: none !important; }\n                html:after {\n                    background: white;\n                    color: black;\n                    content: '{$message}';\n                    display: block !important;\n                    font-family: mono;\n                    padding: 1em;\n                    white-space: pre;\n                }";
     }
-
     /**
      * Render errors as a pseudo-element within valid CSS, displaying the errors on any
      * page that includes this CSS.
@@ -261,7 +204,6 @@ class Server
     {
         $this->showErrorsAsCSS = $show;
     }
-
     /**
      * Compile .scss file
      *
@@ -274,23 +216,17 @@ class Server
      */
     public function compileFile($in, $out = null)
     {
-        if (! is_readable($in)) {
+        if (!is_readable($in)) {
             throw new ServerException('load error: failed to find ' . $in);
         }
-
         $pi = pathinfo($in);
-
         $this->scss->addImportPath($pi['dirname'] . '/');
-
         $compiled = $this->scss->compile(file_get_contents($in), $in);
-
         if ($out !== null) {
             return file_put_contents($out, $compiled);
         }
-
         return $compiled;
     }
-
     /**
      * Check if file need compiling
      *
@@ -301,15 +237,12 @@ class Server
      */
     public function checkedCompile($in, $out)
     {
-        if (! is_file($out) || filemtime($in) > filemtime($out)) {
+        if (!is_file($out) || filemtime($in) > filemtime($out)) {
             $this->compileFile($in, $out);
-
             return true;
         }
-
         return false;
     }
-
     /**
      * Compile requested scss and serve css.  Outputs HTTP response.
      *
@@ -317,75 +250,54 @@ class Server
      */
     public function serve($salt = '')
     {
-        $protocol = isset($_SERVER['SERVER_PROTOCOL'])
-            ? $_SERVER['SERVER_PROTOCOL']
-            : 'HTTP/1.0';
-
+        $protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0';
         if ($input = $this->findInput()) {
             $output = $this->cacheName($salt . $input);
             $etag = $noneMatch = trim($this->getIfNoneMatchHeader(), '"');
-
             if ($this->needsCompile($output, $etag)) {
                 try {
                     list($css, $etag) = $this->compile($input, $output);
-
                     $lastModified = gmdate('D, d M Y H:i:s', filemtime($output)) . ' GMT';
-
                     header('Last-Modified: ' . $lastModified);
                     header('Content-type: text/css');
                     header('ETag: "' . $etag . '"');
-
                     echo $css;
                 } catch (\Exception $e) {
                     if ($this->showErrorsAsCSS) {
                         header('Content-type: text/css');
-
                         echo $this->createErrorCSS($e);
                     } else {
                         header($protocol . ' 500 Internal Server Error');
                         header('Content-type: text/plain');
-
-                        echo 'Parse error: ' . $e->getMessage() . "\n";
+                        echo 'Parse error: ' . $e->getMessage() . '
+';
                     }
                 }
-
                 return;
             }
-
             header('X-SCSS-Cache: true');
             header('Content-type: text/css');
             header('ETag: "' . $etag . '"');
-
             if ($etag === $noneMatch) {
                 header($protocol . ' 304 Not Modified');
-
                 return;
             }
-
             $modifiedSince = $this->getIfModifiedSinceHeader();
             $mtime = filemtime($output);
-
             if (strtotime($modifiedSince) === $mtime) {
                 header($protocol . ' 304 Not Modified');
-
                 return;
             }
-
-            $lastModified  = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
+            $lastModified = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
             header('Last-Modified: ' . $lastModified);
-
             echo file_get_contents($output);
-
             return;
         }
-
         header($protocol . ' 404 Not Found');
         header('Content-type: text/plain');
-
         $v = Version::VERSION;
-        echo "/* INPUT NOT FOUND scss $v */\n";
+        echo "/* INPUT NOT FOUND scss {$v} */\n";
     }
-
     /**
      * Based on explicit input/output files does a full change check on cache before compiling.
      *
@@ -399,23 +311,19 @@ class Server
      */
     public function checkedCachedCompile($in, $out, $force = false)
     {
-        if (! is_file($in) || ! is_readable($in)) {
+        if (!is_file($in) || !is_readable($in)) {
             throw new ServerException('Invalid or unreadable input file specified.');
         }
-
-        if (is_dir($out) || ! is_writable(file_exists($out) ? $out : dirname($out))) {
+        if (is_dir($out) || !is_writable(file_exists($out) ? $out : dirname($out))) {
             throw new ServerException('Invalid or unwritable output file specified.');
         }
-
         if ($force || $this->needsCompile($out, $etag)) {
             list($css, $etag) = $this->compile($in, $out);
         } else {
             $css = file_get_contents($out);
         }
-
         return $css;
     }
-
     /**
      * Constructor
      *
@@ -426,30 +334,23 @@ class Server
     public function __construct($dir, $cacheDir = null, $scss = null)
     {
         $this->dir = $dir;
-
-        if (! isset($cacheDir)) {
+        if (!isset($cacheDir)) {
             $cacheDir = $this->join($dir, 'scss_cache');
         }
-
         $this->cacheDir = $cacheDir;
-
-        if (! is_dir($this->cacheDir)) {
-            mkdir($this->cacheDir, 0755, true);
+        if (!is_dir($this->cacheDir)) {
+            mkdir($this->cacheDir, 493, true);
         }
-
-        if (! isset($scss)) {
+        if (!isset($scss)) {
             $scss = new Compiler();
             $scss->setImportPaths($this->dir);
         }
-
         $this->scss = $scss;
         $this->showErrorsAsCSS = false;
-
-        if (! ini_get('date.timezone')) {
+        if (!ini_get('date.timezone')) {
             date_default_timezone_set('UTC');
         }
     }
-
     /**
      * Helper method to serve compiled scss
      *

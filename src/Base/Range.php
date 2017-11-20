@@ -8,7 +8,6 @@
  *
  * @link http://leafo.github.io/scssphp
  */
-
 namespace Leafo\ScssPhp\Base;
 
 /**
@@ -20,7 +19,6 @@ class Range
 {
     public $first;
     public $last;
-
     /**
      * Initialize range
      *
@@ -32,7 +30,6 @@ class Range
         $this->first = $first;
         $this->last = $last;
     }
-
     /**
      * Test for inclusion in range
      *

@@ -8,11 +8,9 @@
  *
  * @link http://leafo.github.io/scssphp
  */
-
 namespace Leafo\ScssPhp;
 
 use Leafo\ScssPhp\Formatter\OutputBlock;
-
 /**
  * Base formatter
  *
@@ -24,49 +22,40 @@ abstract class Formatter
      * @var integer
      */
     public $indentLevel;
-
     /**
      * @var string
      */
     public $indentChar;
-
     /**
      * @var string
      */
     public $break;
-
     /**
      * @var string
      */
     public $open;
-
     /**
      * @var string
      */
     public $close;
-
     /**
      * @var string
      */
     public $tagSeparator;
-
     /**
      * @var string
      */
     public $assignSeparator;
-
     /**
      * @var boolea
      */
     public $keepSemicolons;
-
     /**
      * Initialize formatter
      *
      * @api
      */
-    abstract public function __construct();
-
+    public abstract function __construct();
     /**
      * Return indentation (whitespace)
      *
@@ -76,7 +65,6 @@ abstract class Formatter
     {
         return '';
     }
-
     /**
      * Return property assignment
      *
@@ -91,7 +79,6 @@ abstract class Formatter
     {
         return rtrim($name) . $this->assignSeparator . $value . ';';
     }
-
     /**
      * Strip semi-colon appended by property(); it's a separator, not a terminator
      *
@@ -104,14 +91,10 @@ abstract class Formatter
         if ($this->keepSemicolons) {
             return;
         }
-
-        if (($count = count($lines))
-            && substr($lines[$count - 1], -1) === ';'
-        ) {
+        if (($count = count($lines)) && substr($lines[$count - 1], -1) === ';') {
             $lines[$count - 1] = substr($lines[$count - 1], 0, -1);
         }
     }
-
     /**
      * Output lines inside a block
      *
@@ -120,16 +103,12 @@ abstract class Formatter
     protected function blockLines(OutputBlock $block)
     {
         $inner = $this->indentStr();
-
         $glue = $this->break . $inner;
-
         echo $inner . implode($glue, $block->lines);
-
-        if (! empty($block->children)) {
+        if (!empty($block->children)) {
             echo $this->break;
         }
     }
-
     /**
      * Output block selectors
      *
@@ -138,12 +117,8 @@ abstract class Formatter
     protected function blockSelectors(OutputBlock $block)
     {
         $inner = $this->indentStr();
-
-        echo $inner
-            . implode($this->tagSeparator, $block->selectors)
-            . $this->open . $this->break;
+        echo $inner . implode($this->tagSeparator, $block->selectors) . $this->open . $this->break;
     }
-
     /**
      * Output block children
      *
@@ -155,7 +130,6 @@ abstract class Formatter
             $this->block($child);
         }
     }
-
     /**
      * Output non-empty block
      *
@@ -166,34 +140,25 @@ abstract class Formatter
         if (empty($block->lines) && empty($block->children)) {
             return;
         }
-
         $pre = $this->indentStr();
-
-        if (! empty($block->selectors)) {
+        if (!empty($block->selectors)) {
             $this->blockSelectors($block);
-
             $this->indentLevel++;
         }
-
-        if (! empty($block->lines)) {
+        if (!empty($block->lines)) {
             $this->blockLines($block);
         }
-
-        if (! empty($block->children)) {
+        if (!empty($block->children)) {
             $this->blockChildren($block);
         }
-
-        if (! empty($block->selectors)) {
+        if (!empty($block->selectors)) {
             $this->indentLevel--;
-
             if (empty($block->children)) {
                 echo $this->break;
             }
-
             echo $pre . $this->close . $this->break;
         }
     }
-
     /**
      * Entry point to formatting a block
      *
@@ -206,11 +171,8 @@ abstract class Formatter
     public function format(OutputBlock $block)
     {
         ob_start();
-
         $this->block($block);
-
         $out = ob_get_clean();
-
         return $out;
     }
 }

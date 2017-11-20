@@ -8,11 +8,9 @@
  *
  * @link http://leafo.github.io/scssphp
  */
-
 namespace Leafo\ScssPhp\Formatter;
 
 use Leafo\ScssPhp\Formatter;
-
 /**
  * Compact formatter
  *
@@ -29,12 +27,13 @@ class Compact extends Formatter
         $this->indentChar = '';
         $this->break = '';
         $this->open = ' {';
-        $this->close = "}\n\n";
+        $this->close = '}
+
+';
         $this->tagSeparator = ',';
         $this->assignSeparator = ':';
         $this->keepSemicolons = true;
     }
-
     /**
      * {@inheritdoc}
      */

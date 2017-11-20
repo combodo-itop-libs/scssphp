@@ -8,7 +8,6 @@
  *
  * @link http://leafo.github.io/scssphp
  */
-
 namespace Leafo\ScssPhp\Compiler;
 
 /**
@@ -22,17 +21,14 @@ class Environment
      * @var \Leafo\ScssPhp\Block
      */
     public $block;
-
     /**
      * @var \Leafo\ScssPhp\Compiler\Environment
      */
     public $parent;
-
     /**
      * @var array
      */
     public $store;
-
     /**
      * @var integer
      */

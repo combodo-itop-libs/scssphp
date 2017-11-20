@@ -8,7 +8,6 @@
  *
  * @link http://leafo.github.io/scssphp
  */
-
 namespace Leafo\ScssPhp\Formatter;
 
 /**
@@ -22,27 +21,22 @@ class OutputBlock
      * @var string
      */
     public $type;
-
     /**
      * @var integer
      */
     public $depth;
-
     /**
      * @var array
      */
     public $selectors;
-
     /**
      * @var array
      */
     public $lines;
-
     /**
      * @var array
      */
     public $children;
-
     /**
      * @var \Leafo\ScssPhp\Formatter\OutputBlock
      */
